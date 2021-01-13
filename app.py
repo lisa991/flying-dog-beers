@@ -2,11 +2,30 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
+#Get data
+data = pd.read_excel('Deal Tracking Report.xlsx', 'Deal Tracking 2020')
+data.sort_values("Sale Date", inplace=True)
+data['TotalSale_7DayRollingAvg']=data['Total Sale'].rolling(7).mean()
+
+#Format dates
+data['week_of_year'] = data['Sale Date'].dt.week
+data['day_of_week'] = data['Sale Date'].dt.dayofweek
+dw_mapping={
+    0: 'Monday', 
+    1: 'Tuesday', 
+    2: 'Wednesday', 
+    3: 'Thursday', 
+    4: 'FridayTTe',
+    5: 'Saturday', 
+    6: 'Sunday'
+} 
+data['day_of_week_name']=data['Sale Date'].dt.weekday.map(dw_mapping)
+data.sort_values(by=['Sale Date'])
 
 ########### Define your variables
-beers=['Chesapeake Stout', 'Snake Dog IPA', 'Imperial Porter', 'Double Dog IPA']
-ibu_values=[35, 60, 85, 75]
-abv_values=[5.4, 7.1, 9.2, 4.3]
+beers=['Manufacturer']
+ibu_values=data['Gross Profit']
+abv_values=data['Total Sale']
 color1='darkred'
 color2='orange'
 mytitle='Beer Comparison'
@@ -16,6 +35,8 @@ label1='IBU'
 label2='ABV'
 githublink='https://github.com/austinlasseter/flying-dog-beers'
 sourceurl='https://www.flyingdog.com/beers/'
+
+
 
 ########### Set up the chart
 bitterness = go.Bar(
